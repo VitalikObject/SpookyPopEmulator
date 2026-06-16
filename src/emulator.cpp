@@ -1907,7 +1907,7 @@ Emulator::Emulator(EmulatorOptions options)
     , sandbox_root_(options.sandbox_root.empty() ? std::filesystem::current_path() / "sandbox" : std::move(options.sandbox_root))
     , asset_exists_(std::move(options.asset_exists))
     , read_asset_(std::move(options.read_asset))
-    , guest_home_("/var/mobile/Applications/Clashv1.70")
+    , guest_home_("/var/mobile/Applications/com.supercell.phoenix")
     , guest_tmp_(JoinPathForGuest(guest_home_, "tmp"))
     , trace_shims_(options.trace_shims)
     , image_(options.binary_bytes
