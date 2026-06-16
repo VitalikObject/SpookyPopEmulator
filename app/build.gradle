@@ -1,0 +1,60 @@
+plugins {
+    id "com.android.application"
+}
+
+def stagedAssetsDir = file("$buildDir/generated/assets/clash")
+
+tasks.register("stageClashAssets", Sync) {
+    into stagedAssetsDir
+
+    from("../external/Spooky Pop") {
+        into "binary"
+    }
+
+    from("../external/res") {
+        exclude "**/.DS_Store"
+    }
+}
+
+android {
+    namespace "com.supercell.phoenix"
+    compileSdk 24
+
+    defaultConfig {
+        applicationId "com.supercell.phoenix"
+        minSdk 24
+        targetSdk 24
+        versionCode 1
+        versionName "0.2.10"
+
+        ndk {
+            abiFilters "arm64-v8a"
+        }
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path file("../CMakeLists.txt")
+        }
+    }
+
+    sourceSets {
+        main {
+            // APK layout:
+            //   assets/binary/Clash of Clans
+            //   assets/fingerprint.json
+            //   assets/csv/*
+            assets.srcDirs = [stagedAssetsDir]
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn("stageClashAssets")
+}
