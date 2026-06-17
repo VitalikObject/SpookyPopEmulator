@@ -35,7 +35,7 @@ jobs:
 
         echo "Downloading boost headers..."
         mkdir -p extern
-        curl -sSL "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz" | tar -xz -C extern boost_1_82_0/boost
+        curl -sSL "https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.gz" | tar -xz -C extern boost_1_82_0/boost
         mv extern/boost_1_82_0/boost extern/boost
 
     - name: Patch dynarmic's fmt library for Clang 15+

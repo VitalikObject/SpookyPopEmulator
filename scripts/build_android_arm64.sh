@@ -49,7 +49,7 @@ fi
 if [[ ! -d "${ROOT_DIR}/extern/boost" ]]; then
   echo "Downloading boost headers..."
   mkdir -p "${ROOT_DIR}/extern"
-  curl -sSL "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz" | tar -xz -C "${ROOT_DIR}/extern" boost_1_82_0/boost
+  curl -sSL "https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.gz" | tar -xz -C "${ROOT_DIR}/extern" boost_1_82_0/boost
   mv "${ROOT_DIR}/extern/boost_1_82_0/boost" "${ROOT_DIR}/extern/boost"
   rm -rf "${ROOT_DIR}/extern/boost_1_82_0"
 fi
