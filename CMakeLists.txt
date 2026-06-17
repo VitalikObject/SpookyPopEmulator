@@ -18,6 +18,8 @@ if (ANDROID AND DEFINED CMAKE_ANDROID_ARCH_ABI AND NOT CMAKE_ANDROID_ARCH_ABI ST
     message(FATAL_ERROR "The Android port expects arm64-v8a so Dynarmic can JIT guest A32 to host A64.")
 endif()
 
+add_compile_definitions(FMT_USE_NONTYPE_TEMPLATE_PARAMETERS=0)
+
 add_subdirectory(extern/dynarmic EXCLUDE_FROM_ALL)
 
 if (APPLE)

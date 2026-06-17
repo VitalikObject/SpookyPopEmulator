@@ -19,20 +19,42 @@ if [[ -z "${NDK_ROOT}" || ! -f "${NDK_ROOT}/build/cmake/android.toolchain.cmake"
   exit 2
 fi
 
-CMAKE_EXTRA_ARGS=()
-if [[ -z "${Boost_INCLUDE_DIR:-}" ]]; then
-  for candidate in \
-    "/opt/homebrew/include" \
-    "/usr/local/include" \
-    "$(brew --prefix boost 2>/dev/null)/include"; do
-    if [[ -f "${candidate}/boost/version.hpp" ]]; then
-      CMAKE_EXTRA_ARGS+=("-DBoost_INCLUDE_DIR=${candidate}")
-      break
-    fi
-  done
-else
-  CMAKE_EXTRA_ARGS+=("-DBoost_INCLUDE_DIR=${Boost_INCLUDE_DIR}")
+echo "Preparing dependencies..."
+git submodule update --init --recursive
+
+# 1. Patch fmt for Clang 15+ (Android NDK r26+)
+FMT_HEADER="${ROOT_DIR}/extern/dynarmic/externals/fmt/include/fmt/format.h"
+if [[ -f "${FMT_HEADER}" ]]; then
+  sed -i.bak 's/#define FMT_STRING(s) FMT_STRING_IMPL(s, fmt::detail::compile_string, )/#define FMT_STRING(s) s/g' "${FMT_HEADER}" || true
 fi
+
+# 2. Download sqlite3 amalgamation if missing
+if [[ ! -f "${ROOT_DIR}/extern/sqlite3/sqlite3.c" ]]; then
+  echo "Downloading sqlite3..."
+  mkdir -p "${ROOT_DIR}/extern/sqlite3"
+  curl -sSL "https://www.sqlite.org/2023/sqlite-amalgamation-3430200.zip" -o "${ROOT_DIR}/extern/sqlite3.zip"
+  unzip -q "${ROOT_DIR}/extern/sqlite3.zip" -d "${ROOT_DIR}/extern/"
+  mv "${ROOT_DIR}/extern/sqlite-amalgamation-3430200/"* "${ROOT_DIR}/extern/sqlite3/"
+  rm -rf "${ROOT_DIR}/extern/sqlite3.zip" "${ROOT_DIR}/extern/sqlite-amalgamation-3430200/"
+fi
+
+# 3. Download stb_truetype.h if missing
+if [[ ! -f "${ROOT_DIR}/extern/stb/stb_truetype.h" ]]; then
+  echo "Downloading stb_truetype.h..."
+  mkdir -p "${ROOT_DIR}/extern/stb"
+  curl -sSL "https://raw.githubusercontent.com/nothings/stb/master/stb_truetype.h" -o "${ROOT_DIR}/extern/stb/stb_truetype.h"
+fi
+
+# 4. Download boost headers if missing
+if [[ ! -d "${ROOT_DIR}/extern/boost" ]]; then
+  echo "Downloading boost headers..."
+  mkdir -p "${ROOT_DIR}/extern"
+  curl -sSL "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz" | tar -xz -C "${ROOT_DIR}/extern" boost_1_82_0/boost
+  mv "${ROOT_DIR}/extern/boost_1_82_0/boost" "${ROOT_DIR}/extern/boost"
+  rm -rf "${ROOT_DIR}/extern/boost_1_82_0"
+fi
+
+CMAKE_EXTRA_ARGS=("-DBoost_INCLUDE_DIR=${ROOT_DIR}/extern")
 
 cmake -S "${ROOT_DIR}" -B "${ROOT_DIR}/build-android-arm64" \
   -DCMAKE_TOOLCHAIN_FILE="${NDK_ROOT}/build/cmake/android.toolchain.cmake" \
