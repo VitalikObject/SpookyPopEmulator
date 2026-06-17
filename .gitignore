@@ -13,6 +13,8 @@
 !src/**
 !scripts/
 !scripts/**
+!extern/
+!extern/**
 !external/
 external/*
 !external/.pastehere

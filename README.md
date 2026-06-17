@@ -2,7 +2,7 @@
 
 An open-source emulator for the iOS version of "Spooky Pop" (a discontinued game by Supercell), allowing it to run natively on Android and macOS.
 
-This emulator translates iOS instructions and shims iOS frameworks (like UIKit, Foundation, CoreGraphics, etc.) to allow the game to run on modern platforms. It uses [Dynarmic](https://github.com/merryhime/dynarmic) for dynamic binary translation.
+This emulator translates iOS instructions and shims iOS frameworks (like UIKit, Foundation, CoreGraphics, etc.) to allow the game to run on modern platforms. It uses [Dynarmic](https://github.com/lioncash/dynarmic.git) for dynamic binary translation.
 
 ## Features
 - **Cross-Platform**: Designed to run on Android and macOS.
