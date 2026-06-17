@@ -1,0 +1,54 @@
+name: Android Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup Android NDK
+      run: |
+        echo "ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME" >> $GITHUB_ENV
+
+    - name: Prepare external dependencies
+      run: |
+        echo "Downloading sqlite3..."
+        mkdir -p extern/sqlite3
+        curl -sSL "https://www.sqlite.org/2023/sqlite-amalgamation-3430200.zip" -o extern/sqlite3.zip
+        unzip -q extern/sqlite3.zip -d extern/
+        mv extern/sqlite-amalgamation-3430200/* extern/sqlite3/
+
+        echo "Downloading stb_truetype.h..."
+        mkdir -p extern/stb
+        curl -sSL "https://raw.githubusercontent.com/nothings/stb/master/stb_truetype.h" -o extern/stb/stb_truetype.h
+
+        echo "Downloading boost headers..."
+        mkdir -p extern
+        curl -sSL "https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.gz" | tar -xz -C extern boost_1_82_0/boost
+        mv extern/boost_1_82_0/boost extern/boost
+
+    - name: Patch dynarmic's fmt library for Clang 15+
+      run: |
+        FMT_HEADER="extern/dynarmic/externals/fmt/include/fmt/format.h"
+        sed -i.bak 's/#define FMT_STRING(s) FMT_STRING_IMPL(s, fmt::detail::compile_string, )/#define FMT_STRING(s) s/g' "$FMT_HEADER"
+
+    - name: Build Android ARM64 library (libg.so)
+      run: |
+        ./scripts/build_android_arm64.sh
+
+    - name: Upload compiled library artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: spookypop-emulator-libg-so
+        path: build-android-arm64/libg.so

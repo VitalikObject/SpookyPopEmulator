@@ -11,6 +11,8 @@
 !app/**
 !src/
 !src/**
+!.github/
+!.github/**
 !scripts/
 !scripts/**
 !extern/
