@@ -1,5 +1,7 @@
 # Spooky Pop Emulator
 
+[![Android Build](https://github.com/VitalikObject/SpookyPopEmulator/actions/workflows/android.yml/badge.svg)](https://github.com/VitalikObject/SpookyPopEmulator/actions/workflows/android.yml)
+
 An open-source emulator for the iOS version of "Spooky Pop" (a discontinued game by Supercell), allowing it to run natively on Android and macOS.
 
 This emulator translates iOS instructions and shims iOS frameworks (like UIKit, Foundation, CoreGraphics, etc.) to allow the game to run on modern platforms. It uses [Dynarmic](https://github.com/lioncash/dynarmic.git) for dynamic binary translation.
@@ -38,3 +40,6 @@ export ANDROID_NDK_HOME=/path/to/android/ndk
 
 ## License
 This project is licensed under the [GNU General Public License v3.0](LICENSE).
+
+## Disclaimer
+This project is not affiliated with, endorsed, sponsored, or specifically approved by Supercell Oy. "Spooky Pop" and other related trademarks are the property of Supercell Oy. This is a non-commercial, educational fan project created for preservation purposes.
